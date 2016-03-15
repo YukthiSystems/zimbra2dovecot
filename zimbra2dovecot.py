@@ -9,6 +9,8 @@ from mailbox import MaildirMessage
 import sys
 
 
+# We store the flags of Zimbra as keys and flags of Maildir as values
+# https://wiki.zimbra.com/wiki/Message_Flags
 flagmap = {
     'f': 'F',
     'r': 'R',
@@ -36,15 +38,23 @@ def get_mails(tf):
                   [m.get_info() for m in tf.getmembers()])
 
 
-def store_mail(tf, member):
-    md = Maildir(path.join('/tmp/out', path.dirname(member['name'])))
+def store_mail(tf, member, maildir):
+    # Retrieve the message
     msg = MaildirMessage(tf.extractfile(member['name']))
-    #msg.set_flags(get_msgflags(get_metadata(tf, member['name'])))
+    msg.set_flags(get_msgflags(get_metadata(tf, member['name'])))
+    folder = path.dirname(member['name'])
+    md = Maildir(maildir)
+    if not folder == 'Inbox':
+        md = Maildir(path.join(maildir, '.' + folder), factory=None)
     md.add(msg)
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print("Usage: {} /path/to/zmmailbox.tgz /path/to/dovecot/Maildir")
+        exit(1)
+
     with TarFile.gzopen(sys.argv[1]) as tf:
         for m in get_mails(tf):
             print("{}".format(m['name'][:20]))
-            store_mail(tf, m)
+            store_mail(tf, m, sys.argv[2])
