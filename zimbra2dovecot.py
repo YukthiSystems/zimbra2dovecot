@@ -29,9 +29,13 @@ def get_msgflags(metadata):
 
 
 def get_metadata(tf):
-    """Return a list of metadata for all mails"""
+    """Return a dict of metadata for all mails with the filename of the
+    mail as the key
+
+    """
     return {k:v for k,v in
-            map(lambda m: (m['name'].rstrip('.meta'), loads(tf.extractfile(m['name']).read().decode())),
+            map(lambda m: (m['name'].rstrip('.meta'),
+                           loads(tf.extractfile(m['name']).read().decode())),
                 filter(lambda m: m['name'].rfind('.meta', -5) >= 0,
                        [m.get_info() for m in tf.getmembers()]))}
 
