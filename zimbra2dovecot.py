@@ -54,7 +54,7 @@ def store_mail(tf, member, maildir, metadata):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print("Usage: {} /path/to/zmmailbox.tgz /path/to/dovecot/Maildir")
+        print("Usage: {} /path/to/zmmailbox.tgz /path/to/dovecot/Maildir".format(sys.argv[0]))
         exit(1)
     with TarFile.gzopen(sys.argv[1]) as tf:
         metadata = get_metadata(tf)

@@ -1,0 +1,1 @@
+Usage: ./zimbra2dovecot.py /path/to/zmmailbox.tgz /path/to/dovecot/Maildir
