@@ -6,6 +6,7 @@ from tarfile import TarFile
 from mailbox import Maildir
 from mailbox import MaildirMessage
 
+import re
 import sys
 
 
@@ -59,17 +60,24 @@ def store_mail(tf, mail, maildir, metadata):
     msg = MaildirMessage(tf.extractfile(mail['name']))
     msg.set_flags(get_msgflags(metadata[mail['name']]))
     folder = path.dirname(mail['name'])
-    md = Maildir(maildir)
-    if not folder == 'Inbox':
+    # Find the mailbox in which to store the mail
+    md = None
+    if re.match('Inbox(\![0-9])?$', folder):
+        md = Maildir(maildir)
+    elif re.match('Sent(\ Items.*)?', folder):
+        md = Maildir(path.join(maildir, '.' + 'Sent'), factory=None)
+    else:
         md = Maildir(path.join(maildir, '.' + folder), factory=None)
+    # Store the mail
     md.add(msg)
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print("Usage: {} /path/to/zmmailbox.tgz /path/to/dovecot/Maildir".format(sys.argv[0]))
+        print("Usage: {} /path/to/zmmailbox.tgz /path/to/Maildir".format(sys.argv[0]))
         exit(1)
     with TarFile.gzopen(sys.argv[1]) as tf:
+        print("Building metadata...")
         metadata = get_metadata(tf)
         for m in get_mails(tf):
             print("{}".format(m['name'][:20]))
