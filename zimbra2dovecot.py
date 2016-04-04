@@ -65,7 +65,7 @@ def store_mail(tf, mail, maildir, metadata):
     if re.match('Inbox(\![0-9])?$', folder):
         md = Maildir(maildir)
     elif re.match('Sent(\ Items.*)?', folder):
-        md = Maildir(path.join(maildir, '.' + 'Sent'), factory=None)
+        md = Maildir(path.join(maildir, '.' + 'Sent Items'), factory=None)
     else:
         md = Maildir(path.join(maildir, '.' + folder), factory=None)
     # Store the mail
