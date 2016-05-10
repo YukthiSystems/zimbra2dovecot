@@ -1,1 +1,10 @@
-Usage: ./zimbra2dovecot.py /path/to/zmmailbox.tgz /path/to/dovecot/Maildir
+Export the mailbox from Zimbra
+------------------------------
+
+zmmailbox -z -m user@example.com -t 0 getRestURL "//?fmt=tgz"> /tmp/user.tgz
+
+
+Convert it to Maildir
+---------------------
+
+./zimbra2dovecot.py /path/to/user.tgz /path/to/user/Maildir
