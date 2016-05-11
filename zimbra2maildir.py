@@ -64,6 +64,11 @@ def store_mail(tf, mail, maildir, metadata):
     md = None
     if re.match('Inbox(\![0-9]+)?$', folder):
         md = Maildir(maildir)
+    elif re.match('Inbox/', folder):
+        # Nested folders under Inbox, put them under a folder named
+        # 'INBOX'.
+        folder = folder.replace('/', '.').replace('Inbox', 'INBOX')
+        md = Maildir(path.join(maildir, '.' + folder), factory=None)
     elif re.match('Sent(\ Items.*)?', folder):
         md = Maildir(path.join(maildir, '.' + 'Sent'), factory=None)
     else:
@@ -79,6 +84,9 @@ if __name__ == '__main__':
     with TarFile.gzopen(sys.argv[1]) as tf:
         print("Building metadata...")
         metadata = get_metadata(tf)
+        maildir_path = sys.argv[2]
+        # Create the top Maildir
+        Maildir(maildir_path)
         for m in get_mails(tf):
             print("{}".format(m['name'][:20]))
-            store_mail(tf, m, sys.argv[2], metadata)
+            store_mail(tf, m, maildir_path, metadata)
